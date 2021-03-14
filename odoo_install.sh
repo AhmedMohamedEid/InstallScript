@@ -16,7 +16,8 @@
 
 OE_USER="odoo12"
 OE_HOME="/$OE_USER"
-OE_HOME_EXT="/home/$OE_USER/${"odoo"}"
+OE_HOME_EXT="/home/$OE_USER/${'odoo'}"
+OE_HONE_VENV="/home/$OE_USER/${'odoo12-venv'}"
 # The default port where this Odoo instance will run under (provided you use the command -c in the terminal)
 # Set to true if you want to install it, false if you don't need it or have it already installed.
 INSTALL_WKHTMLTOPDF="True"
@@ -75,6 +76,11 @@ echo -e "\n---- Installing nodeJS NPM and rtlcss for LTR support ----"
 sudo apt-get install nodejs npm
 sudo npm install -g rtlcss
 
+#-----------------------------
+# Create Virtualenv
+#-----------------------------
+sudo python3 -m venv $OE_HONE_VENV
+source $OE_HONE_VENV/bin/activate
 #--------------------------------------------------
 # Install Wkhtmltopdf if needed
 #--------------------------------------------------
