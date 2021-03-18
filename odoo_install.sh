@@ -15,8 +15,8 @@
 ################################################################################
 
 OE_USER="odoo14"
-OE_HOME="/$OE_USER"
-OE_HOME_EXT="/$OE_USER/${odoo}"
+OE_HOME="home/$OE_USER"
+OE_HOME_EXT="/$OE_USER/odoo"
 # The default port where this Odoo instance will run under (provided you use the command -c in the terminal)
 # Set to true if you want to install it, false if you don't need it or have it already installed.
 INSTALL_WKHTMLTOPDF="True"
@@ -71,11 +71,22 @@ sudo apt-get install postgresql postgresql-server-dev-all -y
 echo -e "\n---- Creating the ODOO PostgreSQL User  ----"
 sudo su - postgres -c "createuser -s $OE_USER" 2> /dev/null || true
 
+echo -e "\n---- Create ODOO14 system user ----"
+#sudo adduser --system --quiet --shell=/bin/bash --home=$OE_HOME --gecos 'ODOO' --group $OE_USER
+#The user should also be added to the sudo'ers group.
+sudo adduser $OE_USER sudo
+sudo usermod -aG sudo $OE_USER
+su - $OE_USER
+
 #--------------------------------------------------
 # Install Dependencies
 #--------------------------------------------------
 echo -e "\n--- Installing Python 3 + pip3 --"
 sudo apt-get install git python3 python3-pip build-essential wget python3-dev python3-venv python3-wheel libxslt-dev libzip-dev libldap2-dev libsasl2-dev python3-setuptools node-less libpng12-0 libjpeg-dev gdebi -y
+
+#creat Virtualenv
+python3 -m venv $OE_HOME/"${OE_USER}-venv"
+source /$OE_HOME/"${OE_USER}-venv"/bin/activate
 
 echo -e "\n---- Install python packages/requirements ----"
 sudo -H pip3 install -r https://github.com/odoo/odoo/raw/${OE_VERSION}/requirements.txt
@@ -103,10 +114,7 @@ else
   echo "Wkhtmltopdf isn't installed due to the choice of the user!"
 fi
 
-echo -e "\n---- Create ODOO system user ----"
-sudo adduser --system --quiet --shell=/bin/bash --home=$OE_HOME --gecos 'ODOO' --group $OE_USER
-#The user should also be added to the sudo'ers group.
-sudo adduser $OE_USER sudo
+
 
 echo -e "\n---- Create Log directory ----"
 sudo mkdir /var/log/$OE_USER
